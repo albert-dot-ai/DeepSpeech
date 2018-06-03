@@ -17,6 +17,9 @@ except ImportError:
     numpy_include = ''
     assert 'NUMPY_INCLUDE' in os.environ
 
+def read(fname):
+    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+
 numpy_include = os.getenv('NUMPY_INCLUDE', numpy_include)
 
 project_name = 'deepspeech'
@@ -27,7 +30,7 @@ if '--project_name' in sys.argv:
   sys.argv.pop(project_name_idx)
 
 with open('../VERSION', 'r') as ver:
-  project_version = ver.read()
+  project_version = ver.read().strip()
 
 class BuildExtFirst(build):
     sub_commands = [('build_ext', build.has_ext_modules),
@@ -49,6 +52,8 @@ utils = Extension('deepspeech._utils',
 
 setup(name = project_name,
       description = 'A library for running inference on a DeepSpeech model',
+      long_description = read('../README.md'),
+      long_description_content_type = 'text/markdown; charset=UTF-8',
       author = 'Mozilla',
       version = project_version,
       package_dir = {'deepspeech': 'python'},
@@ -56,6 +61,12 @@ setup(name = project_name,
       cmdclass = {'build': BuildExtFirst},
       license = 'MPL-2.0',
       url = 'https://github.com/mozilla/DeepSpeech',
+      project_urls = {
+        'Documentation': 'https://github.com/mozilla/DeepSpeech/tree/v{}#project-deepspeech'.format(project_version),
+        'Tracker': 'https://github.com/mozilla/DeepSpeech/issues',
+        'Repository': 'https://github.com/mozilla/DeepSpeech/tree/v{}'.format(project_version),
+        'Discussions': 'https://discourse.mozilla.org/c/deep-speech',
+      },
       ext_modules = [model, utils],
       entry_points={'console_scripts':['deepspeech = deepspeech.client:main']},
       install_requires = ['numpy', 'scipy'],

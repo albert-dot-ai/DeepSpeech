@@ -2,14 +2,14 @@ NODE_BUILD_TOOL    ?= node-pre-gyp
 NODE_ABI_TARGET    ?= 
 NODE_BUILD_VERBOSE ?= --verbose
 PROJECT_NAME       ?= deepspeech
-PROJECT_VERSION    ?= $(shell cat ../../VERSION)
+PROJECT_VERSION    ?= $(shell cat ../../VERSION | tr -d '\n')
 
 include ../definitions.mk
 
 default: build
 
 clean:
-	rm -f deepspeech_wrap.cxx package.json
+	rm -f deepspeech_wrap.cxx package.json README.md
 	rm -rf ./build/
 
 clean-npm-pack:
@@ -18,6 +18,9 @@ clean-npm-pack:
 
 really-clean: clean clean-npm-pack
 	rm -fr ./lib/
+
+README.md:
+	cp ../../README.md README.md
 
 package.json: package.json.in
 	sed \
@@ -37,7 +40,7 @@ copy-deps: build
 node-wrapper: copy-deps build
 	$(NODE_BUILD_TOOL) $(NODE_PLATFORM_TARGET) $(NODE_ABI_TARGET) package $(NODE_BUILD_VERBOSE)
 
-npm-pack: clean package.json
+npm-pack: clean package.json README.md
 	npm install node-pre-gyp@0.6.x
 	npm pack $(NODE_BUILD_VERBOSE)
 
