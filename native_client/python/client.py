@@ -89,9 +89,8 @@ def main():
 
     print('Running inference.', file=sys.stderr)
     inference_start = timer()
-    print(ds.stt(audio, fs))
+    print(ds.stt_with_logits(audio, fs))
     inference_end = timer() - inference_start
     print('Inference took %0.3fs for %0.3fs audio file.' % (inference_end, audio_length), file=sys.stderr)
-
 if __name__ == '__main__':
     main()

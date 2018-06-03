@@ -9,6 +9,8 @@
 
 #include <iostream>
 
+#include <stdio.h>
+
 #include "deepspeech.h"
 #include "deepspeech_utils.h"
 #include "alphabet.h"
@@ -245,7 +247,7 @@ Model::decode(int aNFrames, float*** aLogits)
 
 DEEPSPEECH_EXPORT
 char*
-Model::infer(float* aMfcc, int aNFrames, int aFrameLen)
+Model::infer(float** logits, int* logitTimesteps, int* logitBatchsize, int* logitNumclasses, float* aMfcc, int aNFrames, int aFrameLen)
 {
   const int batch_size = BATCH_SIZE;
   const int timesteps = aNFrames;
@@ -340,6 +342,22 @@ Model::infer(float* aMfcc, int aNFrames, int aFrameLen)
     }
   }
 
+  if (logits) {
+    *logits = (float*) calloc(timesteps * batch_size * num_classes, sizeof(float));
+    
+    *logitTimesteps = timesteps;
+    *logitBatchsize = batch_size;
+    *logitNumclasses = num_classes;
+
+    for (int t = 0; t < timesteps; ++t) {
+      for (int b = 0; b < batch_size; ++b) {
+        for (int c = 0; c < num_classes; ++c) {
+          (*logits)[t * batch_size * num_classes + b * num_classes + c] = input_data_mat[t][b][c];
+        }
+      }
+    }
+  }
+
   return decode(aNFrames, input_data_mat);
 }
 
@@ -352,7 +370,21 @@ Model::stt(const short* aBuffer, unsigned int aBufferSize, int aSampleRate)
   int n_frames;
 
   getInputVector(aBuffer, aBufferSize, aSampleRate, &mfcc, &n_frames, NULL);
-  string = infer(mfcc, n_frames);
+  string = infer(0, 0, 0, 0, mfcc, n_frames);
+  free(mfcc);
+  return string;
+}
+
+DEEPSPEECH_EXPORT
+char*
+Model::stt_with_logits(const short* aBuffer, unsigned int aBufferSize, int aSampleRate, float** logits, int* logitTimesteps, int* logitBatchsize, int* logitNumclasses)
+{
+  float* mfcc;
+  char* string;
+  int n_frames;
+
+  getInputVector(aBuffer, aBufferSize, aSampleRate, &mfcc, &n_frames, NULL);
+  string = infer(logits, logitTimesteps, logitBatchsize, logitNumclasses, mfcc, n_frames);
   free(mfcc);
   return string;
 }

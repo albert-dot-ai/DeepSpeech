@@ -51,7 +51,7 @@ LocalDsSTT(Model& aCtx, const short* aBuffer, size_t aBufferSize,
   aCtx.getInputVector(aBuffer, aBufferSize, aSampleRate, &mfcc, &n_frames);
   ds_end_mfcc = clock();
 
-  res->string = aCtx.infer(mfcc, n_frames);
+  res->string = aCtx.infer(0, 0, 0, 0, mfcc, n_frames);
   ds_end_infer = clock();
 
   free(mfcc);

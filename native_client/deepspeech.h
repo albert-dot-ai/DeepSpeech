@@ -113,7 +113,8 @@ namespace DeepSpeech
        * @return The resulting string after running inference. The user is
        *         responsible for freeing this string.
        */
-      char* infer(float* aMfcc,
+      char* infer(float** logits, int* logitTimesteps, int* logitBatchsize, int* logitNumclasses,
+                float* aMfcc,
                   int aNFrames,
                   int aFrameLen = 0);
 
@@ -130,6 +131,8 @@ namespace DeepSpeech
       char* stt(const short* aBuffer,
                 unsigned int aBufferSize,
                 int aSampleRate);
+
+      char* stt_with_logits(const short* aBuffer, unsigned int aBufferSize, int aSampleRate, float** logits, int* logitTimesteps, int* logitBatchsize, int* logitNumclasses);
   };
 
 }
