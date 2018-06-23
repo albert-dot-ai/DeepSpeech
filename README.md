@@ -369,3 +369,21 @@ There are several ways to contact us or to get help:
 3. [**IRC**](https://wiki.mozilla.org/IRC) - If your question is not addressed by either the [FAQ](https://github.com/mozilla/DeepSpeech/wiki#frequently-asked-questions) or [Discourse Forums](https://discourse.mozilla.org/c/deep-speech), you can contact us on the `#machinelearning` channel on [Mozilla IRC](https://wiki.mozilla.org/IRC); people there can try to answer/help
 
 4. [**Issues**](https://github.com/mozilla/deepspeech/issues) - Finally, if all else fails, you can open an issue in our repo.
+
+## installation
+```
+wget -O - https://github.com/mozilla/DeepSpeech/releases/download/v0.1.1/deepspeech-0.1.1-models.tar.gz | tar xvfz -
+wget https://cdn.discordapp.com/attachments/460098267758460940/460161066635231234/deepspeech-0.2.0a5-cp27-cp27mu-linux_x86_64.whl
+wget https://doc-10-6k-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/khap3101235h1pnl9cdiahcvt3he3bp1/1529776800000/02931968316262426855/*/1N7atnB0iPtYwkO_i-vO7fT43yYZn5siV?e=download -O libdeepspeech.so
+wget https://doc-0c-6k-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/47evn1dg6mqj0v3ue7i8t56pae53lemf/1529776800000/02931968316262426855/*/1uYE55HYrRn5ABIK5BW_GyVHy7zo0tu_a?e=download -O libdeepspeech_utils.so
+
+mkdir libdeepspeech
+mv libdeepspeech.so libdeepspeech_utils.so libdeepspeech
+wget https://raw.githubusercontent.com/albert-dot-ai/DeepSpeech/master/native_client/python/client.py
+wget http://www.voiptroubleshooter.com/open_speech/american/OSR_us_000_0010_8k.wav
+sox OSR_* -r 16000 -b 16 test.wav
+
+pip install deepspeech-*.whl
+export PYTHONPATH=$PYTHONPATH:`pwd`/libdeepspeech
+python client.py models/output_graph.pb models/alphabet.txt test.wav
+```
